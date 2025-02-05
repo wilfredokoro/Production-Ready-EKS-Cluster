@@ -10,3 +10,8 @@
 
 - **[Part 3: Automating Deployments with FluxCD](https://medium.com/@alex-tsvetkov/how-to-create-a-production-ready-eks-cluster-on-aws-using-terraform-part-3-fluxcd-afa21814a1cc)**  
   Implement GitOps for Kubernetes by using FluxCD to manage and deploy workloads declaratively.
+
+### created by Alex Tsvetkov
+
+
+
