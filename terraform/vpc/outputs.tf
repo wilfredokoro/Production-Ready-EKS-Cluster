@@ -3,7 +3,7 @@ output "azs" {
   value       = module.vpc.azs
 }
 
-output "name" {
+output "vpc-name" {
   description = "VPC name"
   value       = module.vpc.name
 }

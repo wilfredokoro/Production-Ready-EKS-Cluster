@@ -2,11 +2,11 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.17.0"
 
-  name = var.name
+  name = var.vpc-name
   cidr = var.cidr
 
   # https://www.terraform.io/language/functions/cidrsubnet
-  azs                 = ["${var.region}a", "${var.region}b", "${var.region}c"]
+  azs                 = ["us-east-1a", "us-east-1b", "us-east-1c"]
   private_subnets     = [for i in [0, 1, 2] : cidrsubnet(var.cidr, 4, i)]
   public_subnets      = [for i in [50, 51, 52] : cidrsubnet(var.cidr, 8, i)]
   database_subnets    = [for i in [60, 61, 62] : cidrsubnet(var.cidr, 8, i)]
