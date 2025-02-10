@@ -8,7 +8,7 @@ locals {
           min_size       = 1
           max_size       = 2
           desired_size   = 1
-          key_name       = aws_key_pair.kubernetes.key_name
+          key_name       = "bestman"
           instance_types = ["t2.medium"]
           capacity_type  = "SPOT"
           metadata_options = {
@@ -28,7 +28,7 @@ locals {
           min_size       = 1
           max_size       = 2
           desired_size   = 1
-          key_name       = aws_key_pair.kubernetes.key_name
+          key_name       = "bestman"
           instance_types = ["t2.medium"]
           capacity_type  = "SPOT"
           metadata_options = {

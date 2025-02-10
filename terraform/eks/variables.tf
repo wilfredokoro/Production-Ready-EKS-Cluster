@@ -1,7 +1,7 @@
 variable "region" {
   type        = string
   description = "Default region"
-  default     = "eu-west-2"
+  default     = "us-east-1"
 }
 
 variable "cluster_version" {
@@ -13,11 +13,11 @@ variable "cluster_version" {
 variable "name" {
   type        = string
   description = "Cluster name"
-  default     = "training_eks"
+  default     = "fred_eks"
 }
 
-variable "kubernetes_public_key" {
-  type        = string
-  description = "Public SSH key for accessing EC2 instances in the node groups"
-  default     = "ssh-rsa REDACTED"
-}
+# variable "kubernetes_public_key" {
+#   type        = string
+#   description = "Public SSH key for accessing EC2 instances in the node groups"
+#   default     = "ssh-rsa REDACTED"
+# }
