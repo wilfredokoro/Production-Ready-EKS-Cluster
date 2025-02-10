@@ -17,7 +17,7 @@ on:
         default: 'apply'
       directory:
         type: choice
-        description: 'Select directory (eks, vpc, or vpc-then-eks)'
+        description: 'Select directory (eks or vpc)'
         options:
           - eks
           - vpc
