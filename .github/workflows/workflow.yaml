@@ -123,6 +123,170 @@
 #       if: ${{ github.event.inputs.action == 'destroy' }}
 #       working-directory: terraform/vpc
 #       run: terraform destroy -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+# =============================================================================
+
+
+# name: 'Terraform2'
+
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       tfvars_file:
+#         description: 'Path to the .tfvars file'
+#         required: true
+#         default: 'build.tfvars'
+#       action:
+#         type: choice
+#         description: 'Plan, Apply or Destroy'
+#         options:
+#           - plan
+#           - apply
+#           - destroy
+#         required: true
+#         default: 'apply'
+#       directory:
+#         type: choice
+#         description: 'Select directory (eks, vpc, or vpc-then-eks)'
+#         options:
+#           - eks
+#           - vpc
+#           - vpc-then-eks
+#         required: true
+#         default: 'vpc'
+
+# env:
+#   AWS_REGION: us-east-1
+#   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+# permissions:
+#   contents: read
+
+# jobs:
+#   CheckOut-Repo:
+#     runs-on: ubuntu-latest
+#     environment: production
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#   Setting-Up-Terraform:
+#     runs-on: ubuntu-latest
+#     needs: CheckOut-Repo
+
+#     steps:
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
+#         with:
+#           terraform_version: 1.8.4
+
+#   Terraform-Initializing:
+#     runs-on: ubuntu-latest
+#     needs: Setting-Up-Terraform
+
+#     steps:
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
+#         with:
+#           terraform_version: 1.8.4
+
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Terraform Init
+#         id: init
+#         working-directory: terraform/${{ github.event.inputs.directory }}
+#         run: terraform init
+
+#   Terraform-Formatting-Validating:
+#     runs-on: ubuntu-latest
+#     needs: Terraform-Initializing
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
+#         with:
+#           terraform_version: 1.8.4
+
+#       - name: Terraform Init
+#         working-directory: terraform/${{ github.event.inputs.directory }}
+#         run: terraform init
+
+#       - name: Terraform Format
+#         working-directory: terraform/${{ github.event.inputs.directory }}
+#         run: terraform fmt
+
+#       - name: Terraform Validate
+#         working-directory: terraform/${{ github.event.inputs.directory }}
+#         run: terraform validate
+
+#   Terraform-Action:
+#     runs-on: ubuntu-latest
+#     needs: Terraform-Formatting-Validating
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
+#         with:
+#           terraform_version: 1.8.4
+
+#       - name: Terraform Initialize
+#         working-directory: terraform/${{ github.event.inputs.directory }}
+#         run: terraform init
+
+#       - name: Terraform Plan
+#         if: ${{ github.event.inputs.action == 'plan' }}
+#         working-directory: terraform/${{ github.event.inputs.directory }}
+#         run: terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+
+#       - name: Terraform Apply
+#         if: ${{ github.event.inputs.action == 'apply' }}
+#         working-directory: terraform/${{ github.event.inputs.directory }}
+#         run: terraform apply -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+
+#       - name: Terraform Destroy
+#         if: ${{ github.event.inputs.action == 'destroy' }}
+#         working-directory: terraform/${{ github.event.inputs.directory }}
+#         run: terraform destroy -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+
+#   Run-VPC-Then-EKS:
+#     if: ${{ github.event.inputs.directory == 'vpc-then-eks' }}
+#     runs-on: ubuntu-latest
+#     needs: Terraform-Action
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
+#         with:
+#           terraform_version: 1.8.4
+
+#       - name: Terraform Initialize (VPC)
+#         working-directory: terraform/vpc
+#         run: terraform init
+
+#       - name: Terraform Apply (VPC)
+#         working-directory: terraform/vpc
+#         run: terraform apply -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+
+#       - name: Terraform Initialize (EKS)
+#         working-directory: terraform/eks
+#         run: terraform init
+
+#       - name: Terraform Apply (EKS)
+#         working-directory: terraform/eks
+#         run: terraform apply -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+
+# ==========================================================================
 
 name: 'Terraform2'
 
@@ -130,7 +294,7 @@ on:
   workflow_dispatch:
     inputs:
       tfvars_file:
-        description: 'Path to the .tfvars file'
+        description: 'Path to the .tfvars file (default: build.tfvars)'
         required: true
         default: 'build.tfvars'
       action:
@@ -239,20 +403,31 @@ jobs:
         working-directory: terraform/${{ github.event.inputs.directory }}
         run: terraform init
 
+      - name: Determine .tfvars File
+        id: tfvars
+        run: |
+          if [[ "${{ github.event.inputs.directory }}" == "eks" ]]; then
+            echo "Using eks.tfvars for EKS directory"
+            echo "tfvars_file=eks.tfvars" >> $GITHUB_OUTPUT
+          else
+            echo "Using provided .tfvars file: ${{ github.event.inputs.tfvars_file }}"
+            echo "tfvars_file=${{ github.event.inputs.tfvars_file }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Terraform Plan
         if: ${{ github.event.inputs.action == 'plan' }}
         working-directory: terraform/${{ github.event.inputs.directory }}
-        run: terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+        run: terraform plan -var-file=${{ steps.tfvars.outputs.tfvars_file }} -input=false
 
       - name: Terraform Apply
         if: ${{ github.event.inputs.action == 'apply' }}
         working-directory: terraform/${{ github.event.inputs.directory }}
-        run: terraform apply -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+        run: terraform apply -auto-approve -var-file=${{ steps.tfvars.outputs.tfvars_file }} -input=false
 
       - name: Terraform Destroy
         if: ${{ github.event.inputs.action == 'destroy' }}
         working-directory: terraform/${{ github.event.inputs.directory }}
-        run: terraform destroy -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+        run: terraform destroy -auto-approve -var-file=${{ steps.tfvars.outputs.tfvars_file }} -input=false
 
   Run-VPC-Then-EKS:
     if: ${{ github.event.inputs.directory == 'vpc-then-eks' }}
@@ -282,4 +457,4 @@ jobs:
 
       - name: Terraform Apply (EKS)
         working-directory: terraform/eks
-        run: terraform apply -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+        run: terraform apply -auto-approve -var-file=eks.tfvars -input=false
