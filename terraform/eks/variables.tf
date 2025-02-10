@@ -10,7 +10,7 @@ variable "cluster_version" {
   default     = "1.28"
 }
 
-variable "name" {
+variable "cluster_name" {
   type        = string
   description = "Cluster name"
   default     = "fred_eks"
