@@ -33,7 +33,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: vpc
+        working-directory: terraform/vpc
 
     steps:
     - name: Checkout
@@ -63,7 +63,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Terraform Init
-      working-directory: vpc
+      working-directory: terraform/vpc
       run: terraform init
 
   Terraform-Formatting-Validating:
@@ -80,15 +80,15 @@ jobs:
         terraform_version: 1.8.4
         
     - name: Terraform Init
-      working-directory: vpc
+      working-directory: terraform/vpc
       run: terraform init
       
     - name: Terraform Format
-      working-directory: vpc
+      working-directory: terraform/vpc
       run: terraform fmt
 
     - name: Terraform Validate
-      working-directory: vpc
+      working-directory: terraform/vpc
       run: terraform validate
 
   Terraform-Action:
@@ -105,20 +105,20 @@ jobs:
         terraform_version: 1.8.4
 
     - name: Terraform Init
-      working-directory: vpc
+      working-directory: terraform/vpc
       run: terraform init
 
     - name: Terraform Plan
       if: ${{ github.event.inputs.action == 'plan' }}
-      working-directory: vpc
+      working-directory: terraform/vpc
       run: terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
 
     - name: Terraform Apply
       if: ${{ github.event.inputs.action == 'apply' }}
-      working-directory: vpc
+      working-directory: terraform/vpc
       run: terraform apply -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
 
     - name: Terraform Destroy
       if: ${{ github.event.inputs.action == 'destroy' }}
-      working-directory: vpc
+      working-directory: terraform/vpc
       run: terraform destroy -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
