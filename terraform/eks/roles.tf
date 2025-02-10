@@ -22,7 +22,7 @@ module "aws_ebs_csi_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "5.52.2"
 
-  role_name = "aws-ebs-csi-role-${var.name}"
+  role_name = "aws-ebs-csi-role-${var.cluster_name}"
 
   oidc_providers = {
     main = {

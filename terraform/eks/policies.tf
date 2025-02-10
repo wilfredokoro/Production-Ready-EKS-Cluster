@@ -11,7 +11,7 @@ module "cluster_autoscaler_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version = "5.52.2"
 
-  name   = "cluster-autoscaler-${var.name}"
+  name   = "cluster-autoscaler-${var.cluster_name}"
   policy = data.aws_iam_policy_document.cluster_autoscaler_policy.json
   tags   = local.tags
 }
