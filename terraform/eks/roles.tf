@@ -43,10 +43,10 @@ module "cluster_autoscaler_role" {
   version    = "5.52.2"
   depends_on = [module.eks]
 
-  role_name = "cluster-autoscaler-${var.name}"
+  role_name = "cluster-autoscaler-${var.cluster_name}"
 
   cluster_service_accounts = {
-    (var.name) = ["kube-system:cluster-autoscaler"]
+    (var.cluster_name) = ["kube-system:cluster-autoscaler"]
   }
 
   role_policy_arns = {
