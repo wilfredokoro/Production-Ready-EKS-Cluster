@@ -17,7 +17,7 @@ locals {
             "http_tokens" : "optional"
           }
           labels = {
-            "cluster"   = var.name
+            "cluster"   = var.cluster_name
             "dedicated" = "core"
           }
           subnet_ids = [subnet_id]
@@ -37,7 +37,7 @@ locals {
             "http_tokens" : "optional"
           }
           labels = {
-            "cluster" = var.name
+            "cluster" = var.cluster_name
             "service" = "hextris"
           }
           taints = {
