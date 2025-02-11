@@ -51,6 +51,7 @@ jobs:
           aws-region: us-east-1
           role-session-name: GitHubActionsSession
           audience: sts.amazonaws.com
+
       - name: Verify AWS Authentication
         run: aws sts get-caller-identity
 
@@ -75,8 +76,10 @@ jobs:
 
       - name: Terraform Initialize (VPC)
         working-directory: terraform/vpc
+        env:
+          AWS_REGION: us-east-1
         run: |
-          terraform init -backend-config="role_arn=arn:aws:iam::887998956998:role/GitHubActionsRole"
+          terraform init
                 
       - name: Terraform Plan (VPC)
         if: ${{ github.event.inputs.action == 'plan' }}
