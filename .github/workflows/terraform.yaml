@@ -15,6 +15,9 @@ on:
           - apply
         required: true
         default: 'apply'
+env:
+  BUCKET_NAME: 'terraform-state-bobo12345'
+  AWS_REGION: 'us-east-1'
 
 permissions:
   id-token: write # Required for OIDC
