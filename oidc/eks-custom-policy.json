@@ -1,0 +1,50 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "eks:CreateCluster",
+          "eks:DescribeCluster",
+          "eks:DeleteCluster",
+          "eks:ListClusters",
+          "eks:UpdateClusterConfig",
+          "eks:UpdateClusterVersion"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVpcs",
+          "ec2:DescribeSecurityGroups",
+          "ec2:CreateSecurityGroup",
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "iam:CreateServiceLinkedRole",
+          "iam:GetRole",
+          "iam:PassRole"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::terraform-state-bobo12345",
+          "arn:aws:s3:::terraform-state-bobo12345/*"
+        ]
+      }
+    ]
+  }

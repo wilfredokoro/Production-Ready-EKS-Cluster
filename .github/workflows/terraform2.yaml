@@ -1,4 +1,4 @@
-name: 'Provision VPC then EKS'
++name: 'Provision VPC then EKS'
 
 on:
   workflow_dispatch:
