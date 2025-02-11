@@ -49,12 +49,19 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::887998956998:role/GitHubActionsRole # Replace with your IAM role ARN
           aws-region: us-east-1
+          role-session-name: GitHubActionsSession
 
+      - name: Debug AWS Credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
+          echo "AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY"
+                      
   Provision-VPC:
     runs-on: ubuntu-latest
     needs: Configure-AWS-Credentials
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
