@@ -37,9 +37,8 @@
       {
         "Effect": "Allow",
         "Action": [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListBucket"
+          "s3:*"
+
         ],
         "Resource": [
           "arn:aws:s3:::terraform-state-bobo12345",
