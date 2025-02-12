@@ -89,8 +89,7 @@ jobs:
         working-directory: terraform/vpc
         env:
           AWS_REGION: us-east-1
-        run: |
-          terraform init
+        run: terraform init
                 
       - name: Terraform Plan (VPC)
         if: ${{ github.event.inputs.action == 'plan' }}
@@ -125,7 +124,7 @@ jobs:
 
       - name: Terraform Initialize (EKS)
         working-directory: terraform/eks
-        run: terraformackend-con 
+        run: terraform init
 
       - name: Terraform Plan (EKS)
         if: ${{ github.event.inputs.action == 'plan' }}
