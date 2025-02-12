@@ -77,6 +77,14 @@ jobs:
         with:
           terraform_version: 1.8.4
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            role-to-assume: arn:aws:iam::887998956998:role/GitHubActionsRole # Replace with your IAM role ARN
+            aws-region: us-east-1
+            role-session-name: GitHubActionsSession
+            audience: sts.amazonaws.com
+
       - name: Terraform Initialize (VPC)
         working-directory: terraform/vpc
         env:
@@ -107,12 +115,17 @@ jobs:
         with:
           terraform_version: 1.8.4
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            role-to-assume: arn:aws:iam::887998956998:role/GitHubActionsRole # Replace with your IAM role ARN
+            aws-region: us-east-1
+            role-session-name: GitHubActionsSession
+            audience: sts.amazonaws.com
+
       - name: Terraform Initialize (EKS)
         working-directory: terraform/eks
-        run: |
-          terraform init -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
-                -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-
+        run: terraformackend-con 
 
       - name: Terraform Plan (EKS)
         if: ${{ github.event.inputs.action == 'plan' }}
