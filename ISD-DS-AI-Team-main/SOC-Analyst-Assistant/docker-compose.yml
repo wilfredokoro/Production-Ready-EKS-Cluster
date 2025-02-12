@@ -1,0 +1,39 @@
+# create a private Docker network for testing...
+# the network is accessed via port mapping 8080
+networks:
+  saa-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24 # private range
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+    depends_on:
+      - backend
+    networks:
+      - saa-network
+
+  backend:
+    build: ./backend
+    volumes:
+      - ${PWD}:/app
+    working_dir: /app
+    environment:
+      - RUST_LOG=info
+    networks:
+      saa-network:
+        ipv4_address: 192.168.1.42
+    ports:
+      - "5000:5000"
+    command: ["saa-backend","-u","0.0.0.0","-p","5000"]
+
+#networks:
+#  app-network:
+#    driver: bridge

@@ -1,0 +1,21 @@
+
+.email-analysis {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+#drag-drop-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    color: #007BFF;
+}
+
+#spinner-container {
+    text-align: center;
+    margin-top: 10px;
+}

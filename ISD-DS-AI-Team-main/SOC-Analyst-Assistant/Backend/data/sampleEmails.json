@@ -1,0 +1,98 @@
+[
+    {
+      "incidentId": "INC-2025-001",
+      "detectionTimestamp": "2025-01-09 10:14:57 UTC",
+      "status": "Quarantined (Awaiting Analyst Review)",
+      "emailSubject": "URGENT: Your Account Will Be Locked",
+      "sender": {
+        "displayName": "Bank Security",
+        "emailAddress": "alerts@bank-secure.co"
+      },
+      "riskRating": "High (Blacklisted Domain)",
+      "recipients": ["john.doe@company.com", "jane.smith@company.com"],
+      "lastUpdated": "2025-01-09 10:20:03 UTC",
+      "headerDetails": {
+        "from": "\"Bank Security\" <alerts@bank-secure.co>",
+        "to": "\"John Doe\" <john.doe@company.com>",
+        "cc": "jane.smith@company.com",
+        "subject": "URGENT: Your Account Will Be Locked",
+        "date": "Wed, 09 Jan 2025 10:12:05 +0000",
+        "messageId": "<1234abcd@bank-secure.co>",
+        "replyTo": "secure@bank-updates.co",
+        "returnPath": "<bounce@bank-secure.co>",
+        "received": "from [192.168.1.25] (unknown [45.33.12.44]) ...",
+        "authenticationResults": {
+          "SPF": "fail",
+          "DKIM": "none",
+          "DMARC": "fail"
+        }
+      },
+      "emailContent": {
+        "html": "Dear Customer,<br><br>We noticed unusual activity on your account.<br>Please <a href='http://malicious-link.co/login'>CLICK HERE</a> to verify your account immediately.<br><br>If you fail to do so, your account will be locked within 24 hours.<br><br>Regards,<br>Bank Security Team",
+        "suspiciousElements": [
+          "Urgent tone and potential fear tactic ('Your account will be locked').",
+          "Hyperlink to http://malicious-link.co/login (unusual domain)."
+        ]
+      },
+      "linksAndAttachments": {
+        "links": [
+          {
+            "url": "http://malicious-link.co/login",
+            "status": "Blacklisted Domain",
+            "analysis": "Known phishing host",
+            "action": "Block Domain"
+          }
+        ],
+        "attachments": []
+      },
+      "remediationActions": [
+        "Delete From All Mailboxes",
+        "Block Sender Domain (bank-secure.co)",
+        "Block Phishing URL (malicious-link.co)",
+        "Credential Reset",
+        "Notify Affected Recipients",
+        "Escalate Incident"
+      ],
+      "supplementalDetails": {
+        "userInteractions": [
+          "John Doe: Opened the email but did not click the link.",
+          "Jane Smith: Forwarded the email to IT, triggering this investigation."
+        ],
+        "threatIntelligence": [
+          "bank-secure.co flagged as malicious on multiple sources (VirusTotal, PhishTank).",
+          "IP address 45.33.12.44 associated with previous spam campaigns."
+        ],
+        "MITRE": {
+          "technique": "T1566 (Phishing)",
+          "tactic": "Initial Access"
+        }
+      },
+      "auditLog": [
+        {
+          "timestamp": "2025-01-09 10:14:57 UTC",
+          "user": "Splunk",
+          "action": "Generated Spam Alert",
+          "notes": "Detection event triggered"
+        },
+        {
+          "timestamp": "2025-01-09 10:15:30 UTC",
+          "user": "John Doe",
+          "action": "Marked Email as Suspicious",
+          "notes": "User flagged to Security"
+        },
+        {
+          "timestamp": "2025-01-09 10:18:45 UTC",
+          "user": "Analyst (SOC1)",
+          "action": "Opened Remediate Report Screen",
+          "notes": "Initiating investigation"
+        },
+        {
+          "timestamp": "2025-01-09 10:20:00 UTC",
+          "user": "Analyst (SOC1)",
+          "action": "Updated Status to 'Quarantined'",
+          "notes": "Containment action"
+        }
+      ]
+    }
+  ]
+  

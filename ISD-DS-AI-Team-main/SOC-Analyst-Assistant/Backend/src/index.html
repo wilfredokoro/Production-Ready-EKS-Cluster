@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>SOC Analyst Assistant</title>
+    <style>
+        #spinner-container {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #spinner {
+            border: 6px solid #f3f3f3; /* Light gray */
+            border-top: 6px solid #007BFF; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        #drag-drop-area {
+            flex: 1;
+            flex-direction: column;
+            border: 2px dashed #007BFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: #e7f3ff;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        #drag-drop-area:hover {
+            background-color: #cceeff;
+        }
+
+        #output-container {
+            flex: 3;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #output-heading {
+            font-size: 18px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .json-key {
+            font-weight: normal;
+        }
+
+        .json-value {
+            color: #007700;
+        }
+
+        button.toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 5px;
+            color: #007BFF;
+        }
+
+        button.toggle-btn:focus {
+            outline: none;
+        }
+
+        button.toggle-btn::after {
+            content: "\25BC"; /* Down arrow for expanded state */
+        }
+
+        button.toggle-btn.collapsed::after {
+            content: "\25B6"; /* Right arrow for collapsed state */
+        }
+    </style>
+</head>
+<body>
+<!-- Drag and Drop Area -->
+<div id="drag-drop-area">
+    <h1>SOC Analyst Assistant</h1>
+    Drag and drop a file here, or click to select one for analysis.
+</div>
+
+<!-- Interactive JSON Display Container -->
+<div id="output-container">
+    <div id="output-heading">Analysis results for: <span id="email-subject">[No Subject]</span></div>
+    <div id="output">Analysis Results will appear here...</div>
+</div>
+
+<!-- Spinner Container -->
+<div id="spinner-container">
+    <div id="spinner"></div>
+    <div id="upload-status">Analyzing...</div>
+</div>
+
+<script>
+    const dragDropArea = document.getElementById('drag-drop-area');
+    const output = document.getElementById('output');
+    const emailSubjectElement = document.getElementById('email-subject');
+    const uploadEndpoint = "/api/emails";
+    const spinnerContainer = document.getElementById('spinner-container');
+
+    // Drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dragDropArea.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+
+    // Highlight drag area
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dragDropArea.addEventListener(eventName, () => {
+            dragDropArea.style.backgroundColor = '#cceeff';
+        });
+    });
+
+    // Reset drag area
+    ['dragleave', 'drop'].forEach(eventName => {
+        dragDropArea.addEventListener(eventName, () => {
+            dragDropArea.style.backgroundColor = '#e7f3ff';
+        });
+    });
+
+    // Handle file drop
+    dragDropArea.addEventListener('drop', async (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            await handleFileUpload(files[0]);
+        }
+    });
+
+    // Handle file click (mimics file input selection)
+    dragDropArea.addEventListener('click', () => {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.onchange = async () => {
+            if (fileInput.files.length > 0) {
+                await handleFileUpload(fileInput.files[0]);
+            }
+        };
+        fileInput.click();
+    });
+
+    // Function to upload the file and then display the JSON interactively
+    async function handleFileUpload(file) {
+        spinnerContainer.style.display = 'block';
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Upload file
+            const uploadResponse = await fetch(uploadEndpoint, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!uploadResponse.ok) {
+                throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+            }
+
+            const jsonResponse = await uploadResponse.json();
+
+            // Set the heading with email subject
+            const emailSubject = jsonResponse.emailSubject || "[No Subject]";
+            emailSubjectElement.textContent = emailSubject;
+
+            // Display the JSON interactively
+            displayJSON(jsonResponse);
+        } catch (error) {
+            console.error(error);
+            output.textContent = `Error: ${error.message}`;
+        }
+        spinnerContainer.style.display = 'none';
+    }
+
+    function displayJSON(json, parentKey = '') {
+        const container = document.createElement('div');
+        container.innerHTML = generateHTML(json, parentKey);
+        output.innerHTML = '';
+        output.appendChild(container);
+    }
+
+    function generateHTML(json, parentKey) {
+        let html = '<ul>';
+        for (const key in json) {
+            if (typeof json[key] === 'object' && json[key] !== null) {
+                html += `
+                        <li>
+                            <button class="toggle-btn" onclick="toggleVisibility('${parentKey}${key}', this)"></button>
+                            <span class="json-key">${key}:</span>
+                            <div id="${parentKey}${key}" style="display: block;">
+                                ${generateHTML(json[key], `${parentKey}${key}-`)}
+                            </div>
+                        </li>
+                    `;
+            } else {
+                html += `
+                        <li>
+                            <span class="json-key">${key}:</span>
+                            <span class="json-value">${JSON.stringify(json[key])}</span>
+                        </li>
+                    `;
+            }
+        }
+        html += '</ul>';
+        return html;
+    }
+
+    function toggleVisibility(id, button) {
+        const element = document.getElementById(id);
+        if (element.style.display === 'none') {
+            element.style.display = 'block';
+            button.classList.remove('collapsed');
+        } else {
+            element.style.display = 'none';
+            button.classList.add('collapsed');
+        }
+    }
+</script>
+</body>
+</html>
