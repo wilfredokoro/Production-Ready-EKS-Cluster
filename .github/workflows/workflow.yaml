@@ -312,7 +312,6 @@ on:
         options:
           - eks
           - vpc
-          - vpc-then-eks
         required: true
         default: 'vpc'
 
