@@ -17,7 +17,7 @@ locals {
             "http_tokens" : "optional"
           }
           labels = {
-            "cluster"   = var.cluster_name
+            "cluster"   = var.cluster_name,
             "dedicated" = "core"
           }
           subnet_ids = [subnet_id]
@@ -37,16 +37,14 @@ locals {
             "http_tokens" : "optional"
           }
           labels = {
-            "cluster" = var.cluster_name
+            "cluster" = var.cluster_name,
             "service" = "hextris"
           }
-          taints = {
-            dedicated = {
+          taints = [{            
               key    = "dedicated"
               value  = "hextris"
-              effect = "NO_SCHEDULE"
-            }
-          }
+              effect = "NO_SCHEDULE"    
+          }]
           subnet_ids = [data.terraform_remote_state.vpc.outputs.private_subnets[0]]
         }
       }
